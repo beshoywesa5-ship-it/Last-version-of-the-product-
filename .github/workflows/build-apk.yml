@@ -24,7 +24,9 @@ jobs:
         run: npm install --legacy-peer-deps
 
       - name: Build Web Assets
-        run: npm run build
+        run: |
+          npm run build
+          mkdir -p www && cp -r dist/* www/ || true
 
       - name: Sync Capacitor Android
         run: ./node_modules/.bin/cap sync android || npx --package=@capacitor/cli cap sync android
