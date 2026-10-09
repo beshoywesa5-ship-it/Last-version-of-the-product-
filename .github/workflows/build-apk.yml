@@ -27,7 +27,7 @@ jobs:
         run: npm run build
 
       - name: Sync Capacitor Android
-        run: npx cap sync android
+        run: ./node_modules/.bin/cap sync android || npx --package=@capacitor/cli cap sync android
 
       - name: Set up Java JDK 21
         uses: actions/setup-java@v4
@@ -36,10 +36,10 @@ jobs:
           java-version: '21'
           cache: 'gradle'
 
-      - name: Accept Android SDK Licenses
+      - name: Accept Android SDK Licenses & Install Platform 36
         run: |
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-36" "build-tools;36.0.0" || true
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-36" || true
 
       - name: Configure Keystore from CI Secrets (if available)
         env:
