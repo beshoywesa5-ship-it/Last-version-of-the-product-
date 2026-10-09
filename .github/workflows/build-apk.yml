@@ -28,8 +28,13 @@ jobs:
           npm run build
           mkdir -p www && cp -r dist/* www/ || true
 
-      - name: Sync Capacitor Android
-        run: ./node_modules/.bin/cap sync android || npx --package=@capacitor/cli cap sync android
+      - name: Add and Sync Capacitor Android
+        run: |
+          if [ ! -d "android" ] || [ ! -f "android/gradlew" ]; then
+            echo "Android platform or gradlew missing, adding android platform..."
+            ./node_modules/.bin/cap add android || npx --package=@capacitor/cli cap add android || true
+          fi
+          ./node_modules/.bin/cap sync android || npx --package=@capacitor/cli cap sync android
 
       - name: Set up Java JDK 21
         uses: actions/setup-java@v4
@@ -54,8 +59,16 @@ jobs:
             echo "RELEASE_KEYSTORE_CONFIGURED=false" >> $GITHUB_ENV
           fi
 
-      - name: Make Gradlew Executable
-        run: chmod +x android/gradlew
+      - name: Ensure Gradlew Executable
+        run: |
+          if [ ! -f "android/gradlew" ]; then
+            echo "gradlew missing in android/, generating wrapper..."
+            cd android && gradle wrapper || true
+            cd ..
+          fi
+          if [ -f "android/gradlew" ]; then
+            chmod +x android/gradlew
+          fi
 
       - name: Build Android APK
         env:
@@ -64,10 +77,14 @@ jobs:
           KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: |
           cd android
+          CMD="./gradlew"
+          if [ ! -f "$CMD" ]; then
+            CMD="gradle"
+          fi
           if [ "$RELEASE_KEYSTORE_CONFIGURED" = "true" ] && [ -n "$KEYSTORE_PASSWORD" ] && [ -n "$KEY_ALIAS" ]; then
-            ./gradlew assembleRelease --no-daemon --stacktrace
+            $CMD assembleRelease --no-daemon --stacktrace
           else
-            ./gradlew assembleDebug --no-daemon --stacktrace
+            $CMD assembleDebug --no-daemon --stacktrace
           fi
 
       - name: Upload APK Artifact
