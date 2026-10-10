@@ -59,6 +59,11 @@ export async function registerBiometrics(username = 'masrofy_user'): Promise<{ s
     if (Capacitor.isNativePlatform()) {
       const info = await BiometricAuth.checkBiometry();
       if (!info.isAvailable) {
+        const errCode = String(info.code || '');
+        const errReason = String(info.reason || '');
+        if (errCode.includes('Enrolled') || errReason.includes('Enrolled')) {
+          return { success: false, error: 'not_enrolled' };
+        }
         return { success: false, error: 'unsupported' };
       }
 

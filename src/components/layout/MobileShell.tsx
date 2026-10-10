@@ -35,11 +35,22 @@ export const MobileShell: React.FC = () => {
     resetAllData
   } = useApp();
 
-  const isLockEnabled = Boolean(settings.pinLockEnabled ?? settings.biometricLock);
-  const [showOnboarding, setShowOnboarding] = useState(!settings.hasCompletedOnboarding);
+  const isLockEnabled = Boolean(settings.pinLockEnabled || settings.biometricLock);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [isLocked, setIsLocked] = useState<boolean>(() => isLockEnabled);
   const [isAppBlurred, setIsAppBlurred] = useState(false);
   const lastHiddenTimeRef = useRef<number | null>(null);
+
+  // Sync onboarding dialog only after data has finished loading
+  useEffect(() => {
+    if (!isLoading) {
+      if (!settings.hasCompletedOnboarding) {
+        setShowOnboarding(true);
+      } else {
+        setShowOnboarding(false);
+      }
+    }
+  }, [isLoading, settings.hasCompletedOnboarding]);
 
   useEffect(() => {
     if (!isLockEnabled) {
@@ -190,7 +201,8 @@ export const MobileShell: React.FC = () => {
         <LockScreen
           onUnlock={() => setIsLocked(false)}
           savedPasscode={settings.passcode || '123456'}
-          biometricEnabled={settings.biometricLock}
+          biometricEnabled={Boolean(settings.biometricLock)}
+          pinEnabled={Boolean(settings.pinLockEnabled)}
           language={language === 'en' ? 'en' : 'ar'}
         />
       )}
