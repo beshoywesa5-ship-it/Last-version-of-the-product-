@@ -20,10 +20,11 @@
     <script>
       (function() {
         try {
-          // Default theme: Light on first use unless explicitly set to dark
+          // Theme based on System if not explicitly set
           let theme = localStorage.getItem('masrofy_theme');
           if (!theme) {
-            theme = 'light';
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            theme = prefersDark ? 'dark' : 'light';
           }
           if (theme === 'dark') {
             document.documentElement.classList.add('dark');
@@ -33,17 +34,16 @@
             document.documentElement.setAttribute('data-theme', 'light');
           }
 
-          // Default language: Arabic on first run unless explicitly set
+          // Language based on System if not explicitly set
           let lang = localStorage.getItem('masrofy_lang');
           if (!lang) {
-            lang = 'ar';
+            const sysLang = (navigator.language || (navigator.languages && navigator.languages[0]) || '').toLowerCase();
+            lang = sysLang.startsWith('ar') ? 'ar' : 'en';
           }
           document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
           document.documentElement.lang = lang;
-
           const fontSize = localStorage.getItem('masrofy_font_size') || 'normal';
           document.documentElement.setAttribute('data-font-size', fontSize);
-
           let font = localStorage.getItem('masrofy_font');
           if (!font || font === 'arial' || font === 'almarai' || font === 'cairo' || font === 'noto') {
             font = 'alexandria';
@@ -53,9 +53,9 @@
         } catch(e) {}
       })();
     </script>
-    <script type="module" crossorigin src="/assets/index-CJc7LiRs.js"></script>
+    <script type="module" crossorigin src="/assets/index-8zsv0uRg.js"></script>
     <link rel="modulepreload" crossorigin href="/assets/dist-BZ5u_Dz8.js">
-    <link rel="stylesheet" crossorigin href="/assets/index-DydKr9nT.css">
+    <link rel="stylesheet" crossorigin href="/assets/index-Bkz4K7cC.css">
   </head>
   <body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased selection:bg-blue-100 selection:text-blue-900">
     <div id="root"></div>
