@@ -4,7 +4,7 @@
  * with WebAuthn fallback for modern secure web browsers.
  */
 
-import { BiometricAuth, BiometryType } from '@aparajita/capacitor-biometric-auth';
+import { BiometricAuth, BiometryType, AndroidBiometryStrength } from '@aparajita/capacitor-biometric-auth';
 import { Capacitor } from '@capacitor/core';
 
 const CREDENTIAL_STORAGE_KEY = 'masrofy_biometric_cred_id';
@@ -57,8 +57,10 @@ export async function registerBiometrics(username = 'masrofy_user'): Promise<{ s
   // 1. Native platform flow (Android BiometricPrompt)
   try {
     if (Capacitor.isNativePlatform()) {
+      (window as any).__isBiometricPromptActive = true;
       const info = await BiometricAuth.checkBiometry();
       if (!info.isAvailable) {
+        (window as any).__isBiometricPromptActive = false;
         const errCode = String(info.code || '');
         const errReason = String(info.reason || '');
         if (errCode.includes('Enrolled') || errReason.includes('Enrolled')) {
@@ -70,12 +72,18 @@ export async function registerBiometrics(username = 'masrofy_user'): Promise<{ s
       await BiometricAuth.authenticate({
         reason: 'تأكيد بصمة الإصبع أو الوجه لتفعيل الحماية في مصروفي',
         cancelTitle: 'إلغاء',
+        androidTitle: 'مصروفي - تفعيل البصمة',
+        androidSubtitle: 'المس مستشعر البصمة لحماية بياناتك',
+        androidBiometryStrength: AndroidBiometryStrength.weak,
+        androidConfirmationRequired: false,
       });
 
+      (window as any).__isBiometricPromptActive = false;
       localStorage.setItem(CREDENTIAL_STORAGE_KEY, 'native_biometric_active');
       return { success: true };
     }
   } catch (err: any) {
+    (window as any).__isBiometricPromptActive = false;
     console.warn('Native biometric registration error:', err);
     const code = err?.code || '';
     if (code === 'userCancel' || code === 'appCancel' || err?.message?.toLowerCase().includes('cancel')) {
@@ -154,17 +162,27 @@ export async function authenticateWithBiometrics(): Promise<{ success: boolean; 
   // 1. Native platform authentication (Android BiometricPrompt)
   try {
     if (Capacitor.isNativePlatform()) {
+      (window as any).__isBiometricPromptActive = true;
       await BiometricAuth.authenticate({
         reason: 'تأكيد هويتك بالبصمة لفتح مصروفي',
         cancelTitle: 'إلغاء',
+        androidTitle: 'مصروفي - تأكيد الهوية',
+        androidSubtitle: 'المس مستشعر البصمة لفتح التطبيق',
+        androidBiometryStrength: AndroidBiometryStrength.weak,
+        androidConfirmationRequired: false,
       });
+      (window as any).__isBiometricPromptActive = false;
       return { success: true };
     }
   } catch (err: any) {
+    (window as any).__isBiometricPromptActive = false;
     console.warn('Native biometric authentication error:', err);
     const code = err?.code || '';
     if (code === 'userCancel' || code === 'appCancel' || err?.message?.toLowerCase().includes('cancel')) {
       return { success: false, error: 'cancelled_or_denied' };
+    }
+    if (code === 'biometryLockout' || err?.message?.includes('Lockout')) {
+      return { success: false, error: 'lockout' };
     }
     return { success: false, error: err?.message || 'failed' };
   }

@@ -37,7 +37,16 @@ export const MobileShell: React.FC = () => {
 
   const isLockEnabled = Boolean(settings.pinLockEnabled || settings.biometricLock);
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [isLocked, setIsLocked] = useState<boolean>(() => isLockEnabled);
+  // Zero-Flash Privacy Mode: start locked immediately if security is enabled in storage
+  const [isLocked, setIsLocked] = useState<boolean>(() => {
+    try {
+      const pin = localStorage.getItem('masrofy_pin_lock') === 'true';
+      const bio = localStorage.getItem('masrofy_biometric_lock') === 'true';
+      return pin || bio;
+    } catch {
+      return false;
+    }
+  });
   const [isAppBlurred, setIsAppBlurred] = useState(false);
   const lastHiddenTimeRef = useRef<number | null>(null);
 
@@ -59,6 +68,10 @@ export const MobileShell: React.FC = () => {
     }
 
     const handleVisibilityChange = () => {
+      // Guard against system BiometricPrompt dialog temporarily stealing focus
+      if ((window as any).__isBiometricPromptActive) {
+        return;
+      }
       if (document.hidden) {
         if (settings.privacyBlurEnabled ?? true) {
           setIsAppBlurred(true);
@@ -73,6 +86,7 @@ export const MobileShell: React.FC = () => {
     };
 
     const handlePageHide = () => {
+      if ((window as any).__isBiometricPromptActive) return;
       setIsLocked(true);
     };
 
@@ -89,6 +103,7 @@ export const MobileShell: React.FC = () => {
     try {
       if (Capacitor.isNativePlatform()) {
         CapacitorApp.addListener('appStateChange', ({ isActive }) => {
+          if ((window as any).__isBiometricPromptActive) return;
           if (!isActive) {
             setIsLocked(true);
           }
@@ -143,6 +158,8 @@ export const MobileShell: React.FC = () => {
               <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
               <span>{settings.language === 'ar' ? 'جارٍ التحميل...' : 'Loading...'}</span>
             </div>
+          ) : isLockEnabled && isLocked ? (
+            <div className="h-64" />
           ) : (
             <>
               {activeTab === 'home' && <HomeScreen />}

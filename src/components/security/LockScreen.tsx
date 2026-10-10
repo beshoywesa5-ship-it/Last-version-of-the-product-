@@ -106,6 +106,13 @@ export const LockScreen: React.FC<LockScreenProps> = ({
             ? (language === 'ar' ? 'أدخل رمز المرور (6 أرقام) للمتابعة' : 'Enter 6-digit passcode to unlock')
             : (language === 'ar' ? 'المس مستشعر البصمة لفتح التطبيق' : 'Touch fingerprint sensor to unlock')
         );
+      } else if (res.error === 'lockout') {
+        triggerHaptic('error');
+        setStatusMessage(
+          language === 'ar'
+            ? 'تم قفل مستشعر البصمة مؤقتاً بواسطة النظام، استخدم رمز المرور'
+            : 'Biometrics temporarily locked by system, use passcode'
+        );
       } else {
         // Biometric failed or not matched -> stay on screen, inform user
         triggerHaptic('error');

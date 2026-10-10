@@ -185,6 +185,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       const initialBiometricLock = localStorage.getItem('masrofy_biometric_lock') === 'true';
       const initialPinLock = localStorage.getItem('masrofy_pin_lock') === 'true';
+      const initialPasscode = localStorage.getItem('masrofy_passcode') || '';
+      const initialOnboarding = localStorage.getItem('masrofy_onboarding') === 'true';
 
       return {
         ...DEFAULT_SETTINGS,
@@ -194,6 +196,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         fontSize: initialFontSize,
         biometricLock: initialBiometricLock,
         pinLockEnabled: initialPinLock,
+        passcode: initialPasscode,
+        hasCompletedOnboarding: initialOnboarding,
       };
     } catch (e) {}
     return {
@@ -314,6 +318,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           finalSettings = { ...setObj, currency: 'EGP', currencySymbol: 'ج.م' };
           localDB.saveSettings(finalSettings);
         }
+        if (finalSettings.passcode) {
+          try { localStorage.setItem('masrofy_passcode', finalSettings.passcode); } catch {}
+        }
+        if (finalSettings.pinLockEnabled !== undefined) {
+          try { localStorage.setItem('masrofy_pin_lock', String(Boolean(finalSettings.pinLockEnabled))); } catch {}
+        }
+        if (finalSettings.biometricLock !== undefined) {
+          try { localStorage.setItem('masrofy_biometric_lock', String(Boolean(finalSettings.biometricLock))); } catch {}
+        }
+        if (finalSettings.hasCompletedOnboarding) {
+          try { localStorage.setItem('masrofy_onboarding', 'true'); } catch {}
+        }
         setSettings(finalSettings);
       }
 
@@ -433,6 +449,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if ('pinLockEnabled' in newSettings) {
       try {
         localStorage.setItem('masrofy_pin_lock', String(Boolean(newSettings.pinLockEnabled)));
+      } catch {}
+    }
+    if ('passcode' in newSettings) {
+      try {
+        localStorage.setItem('masrofy_passcode', String(newSettings.passcode || ''));
+      } catch {}
+    }
+    if ('hasCompletedOnboarding' in newSettings) {
+      try {
+        localStorage.setItem('masrofy_onboarding', String(Boolean(newSettings.hasCompletedOnboarding)));
       } catch {}
     }
     await localDB.saveSettings(updated);
