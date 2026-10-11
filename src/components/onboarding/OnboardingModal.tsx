@@ -13,7 +13,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
 }) => {
   const { updateSettings, updateBudgetAmount, t } = useApp();
   const [step, setStep] = useState(0);
-  const [budgetVal, setBudgetVal] = useState('20000');
+  const [budgetVal, setBudgetVal] = useState('');
 
   if (!isOpen) return null;
 
@@ -39,7 +39,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
   ];
 
   const handleFinish = async () => {
-    const bNum = parseFloat(budgetVal) || 20000;
+    const bNum = parseFloat(budgetVal) || 0;
     await updateBudgetAmount(bNum);
     await updateSettings({
       currency: 'EGP',
@@ -98,8 +98,8 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                 type="number"
                 value={budgetVal}
                 onChange={e => setBudgetVal(e.target.value)}
-                placeholder="20000"
-                className="w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white font-bold"
+                placeholder=""
+                className="w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white font-bold text-center"
               />
             </div>
           </div>

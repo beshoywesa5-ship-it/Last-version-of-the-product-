@@ -21,6 +21,7 @@ export async function exportFile(options: ExportFileOptions): Promise<ExportFile
 
   try {
     if (Capacitor.isNativePlatform()) {
+      (window as any).__isSystemPickerActive = true;
       const writeResult = await Filesystem.writeFile({
         path: filename,
         data: content,
@@ -33,6 +34,10 @@ export async function exportFile(options: ExportFileOptions): Promise<ExportFile
         url: writeResult.uri,
         dialogTitle: dialogTitle,
       });
+
+      setTimeout(() => {
+        (window as any).__isSystemPickerActive = false;
+      }, 1000);
 
       return { success: true, uri: writeResult.uri };
     }
@@ -50,6 +55,7 @@ export async function exportFile(options: ExportFileOptions): Promise<ExportFile
 
     return { success: true };
   } catch (err: any) {
+    (window as any).__isSystemPickerActive = false;
     if (err?.message?.includes('canceled') || err?.message?.includes('dismissed')) {
       return { success: false, canceled: true };
     }

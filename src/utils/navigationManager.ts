@@ -162,16 +162,9 @@ class NavigationManager {
         }
       }
 
-      // Double-back to exit on lock screen
-      if (now - this.lastBackPressTime < 2000) {
-        this.exitApplication();
-        return false;
-      }
-      this.lastBackPressTime = now;
-      if (this.onExitPromptCallback) {
-        this.onExitPromptCallback();
-      }
-      return true;
+      // Single-back to exit on lock screen
+      this.exitApplication();
+      return false;
     }
 
     // 1. If any modal, sheet, or confirm dialog is active, invoke top modal close handler
@@ -219,20 +212,9 @@ class NavigationManager {
       return true;
     }
 
-    // 3. If on 'home' tab: guard against accidental app exit (Double-Back to Exit)
-    if (now - this.lastBackPressTime < 2000) {
-      this.exitApplication();
-      return false; // allow exit
-    }
-
-    // First back press on Home: trap and prompt user
-    this.lastBackPressTime = now;
-    if (this.onExitPromptCallback) {
-      this.onExitPromptCallback();
-    } else {
-      window.dispatchEvent(new CustomEvent('masrofy_back_exit_prompt'));
-    }
-    return true;
+    // 3. If on 'home' tab: exit application immediately on single back press
+    this.exitApplication();
+    return false;
   }
 
   private handlePopState = (_e: PopStateEvent) => {

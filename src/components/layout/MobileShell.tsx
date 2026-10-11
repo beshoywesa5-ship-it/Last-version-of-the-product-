@@ -68,8 +68,8 @@ export const MobileShell: React.FC = () => {
     }
 
     const handleVisibilityChange = () => {
-      // Guard against system BiometricPrompt dialog temporarily stealing focus
-      if ((window as any).__isBiometricPromptActive) {
+      // Guard against system BiometricPrompt or file picker dialogs temporarily stealing focus
+      if ((window as any).__isBiometricPromptActive || (window as any).__isSystemPickerActive) {
         return;
       }
       if (document.hidden) {
@@ -86,7 +86,7 @@ export const MobileShell: React.FC = () => {
     };
 
     const handlePageHide = () => {
-      if ((window as any).__isBiometricPromptActive) return;
+      if ((window as any).__isBiometricPromptActive || (window as any).__isSystemPickerActive) return;
       setIsLocked(true);
     };
 
@@ -103,7 +103,7 @@ export const MobileShell: React.FC = () => {
     try {
       if (Capacitor.isNativePlatform()) {
         CapacitorApp.addListener('appStateChange', ({ isActive }) => {
-          if ((window as any).__isBiometricPromptActive) return;
+          if ((window as any).__isBiometricPromptActive || (window as any).__isSystemPickerActive) return;
           if (!isActive) {
             setIsLocked(true);
           }
@@ -132,12 +132,9 @@ export const MobileShell: React.FC = () => {
       activeTab, 
       (tab) => {
         setActiveTab(tab);
-      },
-      () => {
-        showToast(language === 'ar' ? 'اضغط رجوع مرة أخرى للخروج من التطبيق' : 'Press back again to exit app');
       }
     );
-  }, [setActiveTab, language, showToast]);
+  }, [setActiveTab]);
 
   useEffect(() => {
     navigationManager.setTab(activeTab);

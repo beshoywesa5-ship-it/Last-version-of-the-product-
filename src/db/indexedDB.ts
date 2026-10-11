@@ -479,7 +479,7 @@ class LocalDatabase {
       id: `bgt-${periodMonth}`,
       periodStart: `${periodMonth}-01`,
       periodEnd: `${periodMonth}-${String(daysInMonth).padStart(2, '0')}`,
-      amount: 20000,
+      amount: 0,
       currency: 'EGP',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),

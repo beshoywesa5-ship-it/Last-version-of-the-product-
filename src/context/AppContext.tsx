@@ -36,6 +36,7 @@ import {
 } from '../utils/calculations';
 import { translations, Language, Translations, formatMonthLabel } from '../utils/i18n';
 import { exportFile } from '../utils/fileExport';
+import { triggerHaptic } from '../utils/haptics';
 
 interface ToastState {
   id: string;
@@ -351,8 +352,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [loadData]);
 
   // Toast handler with auto-dismiss
+  // Keeps ONLY:
+  // 1) The Undo action toast when deleting a transaction (actionLabel exists)
+  // 2) Critical errors/failures
   const showToast = useCallback((message: string, actionLabel?: string, onAction?: () => void) => {
     if (!message || !message.trim()) return;
+    const isUndoToast = Boolean(actionLabel && onAction);
+    const isCriticalError = message.includes('خطأ') || message.includes('تعذر') || message.includes('لا يمكن') || message.toLowerCase().includes('error') || message.toLowerCase().includes('failed');
+
+    if (!isUndoToast && !isCriticalError) {
+      // Routine messages are silenced and trigger tactile feedback
+      triggerHaptic('light');
+      return;
+    }
+
     const id = `toast-${Date.now()}`;
     setToast({ id, message, actionLabel, onAction });
   }, []);

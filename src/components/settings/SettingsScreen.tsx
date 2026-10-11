@@ -83,12 +83,12 @@ export const SettingsScreen: React.FC = () => {
   const formatNum = (v: number | string) => formatNumber(v, language, numberFormat);
 
   const [budgetInput, setBudgetInput] = useState(
-    language === 'ar' ? toArabicNumerals(budget.amount.toString()) : budget.amount.toString()
+    budget.amount > 0 ? (language === 'ar' ? toArabicNumerals(budget.amount.toString()) : budget.amount.toString()) : ''
   );
   const [isEditingBudget, setIsEditingBudget] = useState(false);
 
   React.useEffect(() => {
-    setBudgetInput(language === 'ar' ? toArabicNumerals(budget.amount.toString()) : budget.amount.toString());
+    setBudgetInput(budget.amount > 0 ? (language === 'ar' ? toArabicNumerals(budget.amount.toString()) : budget.amount.toString()) : '');
   }, [budget.amount, language]);
 
   // Collapsible dropdown sections state
@@ -432,6 +432,7 @@ export const SettingsScreen: React.FC = () => {
   };
 
   const handleCSVUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    (window as any).__isSystemPickerActive = false;
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -447,6 +448,7 @@ export const SettingsScreen: React.FC = () => {
   };
 
   const handleBackupUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    (window as any).__isSystemPickerActive = false;
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -545,11 +547,12 @@ export const SettingsScreen: React.FC = () => {
               type="text"
               inputMode="decimal"
               value={budgetInput}
+              placeholder=""
               onChange={e => setBudgetInput(normalizeArabicNumerals(e.target.value))}
               onKeyDown={e => {
                 if (e.key === 'Enter') handleSaveBudget();
                 if (e.key === 'Escape') {
-                  setBudgetInput(budget.amount.toString());
+                  setBudgetInput(budget.amount > 0 ? budget.amount.toString() : '');
                   setIsEditingBudget(false);
                 }
               }}
@@ -1171,7 +1174,10 @@ export const SettingsScreen: React.FC = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => backupFileInputRef.current?.click()}
+                  onClick={() => {
+                    (window as any).__isSystemPickerActive = true;
+                    backupFileInputRef.current?.click();
+                  }}
                   className="px-2.5 py-1.5 rounded-lg bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/50 dark:hover:bg-purple-900/60 border border-purple-200/80 dark:border-purple-800 text-purple-700 dark:text-purple-300 text-xs font-bold flex items-center gap-1 transition-all shadow-2xs active:scale-95 cursor-pointer"
                   title={language === 'ar' ? 'استيراد نسخة احتياطية' : 'Import JSON Backup'}
                 >
@@ -1205,7 +1211,10 @@ export const SettingsScreen: React.FC = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={() => {
+                    (window as any).__isSystemPickerActive = true;
+                    fileInputRef.current?.click();
+                  }}
                   className="px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:hover:bg-emerald-900/60 border border-emerald-200/80 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center gap-1 transition-all shadow-2xs active:scale-95 cursor-pointer"
                   title={language === 'ar' ? 'استيراد ملف إكسل' : 'Import CSV'}
                 >
