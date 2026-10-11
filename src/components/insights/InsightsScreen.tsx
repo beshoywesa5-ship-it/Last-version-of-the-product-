@@ -312,14 +312,9 @@ export const InsightsScreen: React.FC = () => {
                   </span>
                 </>
               ) : (
-                <>
-                  <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-2">
-                    {language === 'ar' ? 'لا توجد بيانات سابقة' : 'No previous data'}
-                  </div>
-                  <span className="text-xs text-slate-400 mt-1 block">
-                    {language === 'ar' ? 'الفترة الأولى المسجلة' : 'First tracked period'}
-                  </span>
-                </>
+                <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-2">
+                  {language === 'ar' ? 'لا توجد بيانات سابقة' : 'No previous data'}
+                </div>
               )}
             </div>
           </div>
@@ -392,14 +387,9 @@ export const InsightsScreen: React.FC = () => {
           {/* 4. CATEGORY INTELLIGENCE: Ranked Breakdown (Where Did My Money Go?) */}
           <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-3">
             <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-base font-bold text-slate-800 dark:text-slate-200">
-                  {t.insights.whereDidMoneyGo}
-                </h2>
-              </div>
-              <span className="text-xs text-slate-500 dark:text-slate-400">
-                {t.insights.tapCategoryToView}
-              </span>
+              <h2 className="text-base font-bold text-slate-800 dark:text-slate-200">
+                {t.insights.whereDidMoneyGo}
+              </h2>
             </div>
 
             <div className="space-y-3 pt-1">

@@ -337,21 +337,33 @@ export const HomeScreen: React.FC = () => {
                   <div
                     key={s.account.id}
                     onClick={() => setSelectedWalletId(s.account.id)}
-                    className="min-w-[130px] max-w-[160px] shrink-0 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex flex-col justify-between gap-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-700 cursor-pointer transition-all active:scale-98 relative overflow-hidden select-none"
+                    className="min-w-[135px] max-w-[165px] shrink-0 p-3 rounded-2xl bg-gradient-to-br from-white via-slate-50 to-slate-100 dark:from-slate-850 dark:via-slate-850 dark:to-slate-900 border border-slate-200/90 dark:border-slate-750 flex flex-col justify-between gap-2 hover:border-slate-400 dark:hover:border-slate-600 cursor-pointer transition-all active:scale-98 relative overflow-hidden select-none shadow-xs"
                   >
-                    {/* Top colored accent indicator */}
+                    {/* Top colored metallic accent strip */}
                     <div 
-                      className="absolute top-0 inset-x-0 h-0.5" 
+                      className="absolute top-0 inset-x-0 h-1 opacity-90" 
                       style={{ backgroundColor: accColor }} 
                     />
 
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      <AccountIcon type={s.account.type} color={accColor} size={14} />
-                      <span className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate block">
-                        {getAccountDisplayName(s.account.name, language)}
-                      </span>
+                    <div className="flex items-center justify-between gap-1.5 pt-0.5">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <AccountIcon 
+                          name={s.account.icon || s.account.type} 
+                          color={accColor} 
+                          size={13} 
+                          showBackground={true}
+                          className="w-6 h-6 p-1 rounded-lg shrink-0"
+                        />
+                        <span className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate block">
+                          {getAccountDisplayName(s.account.name, language)}
+                        </span>
+                      </div>
                     </div>
-                    <div>
+
+                    <div className="pt-0.5">
+                      <span className="text-[10px] text-slate-400 font-medium block leading-none mb-1">
+                        {language === 'ar' ? 'الرصيد المتاح' : 'Available'}
+                      </span>
                       <span className={`text-sm font-black block tracking-tight ${
                         isOwed ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white'
                       }`}>

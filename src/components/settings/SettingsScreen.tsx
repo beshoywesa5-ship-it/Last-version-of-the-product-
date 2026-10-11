@@ -758,7 +758,13 @@ export const SettingsScreen: React.FC = () => {
                   }`}
                 >
                   <div className="flex items-center gap-2.5 min-w-0 flex-1 pe-2">
-                    <AccountIcon name={acc.icon || acc.type} size={18} />
+                    <AccountIcon 
+                      name={acc.icon || acc.type} 
+                      color={acc.color || '#3B82F6'} 
+                      size={15} 
+                      showBackground={true} 
+                      className="w-8 h-7.5 p-1 rounded-xl shrink-0" 
+                    />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5">
                         <span className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate leading-normal" title={getAccountDisplayName(acc.name, language)}>
@@ -858,7 +864,13 @@ export const SettingsScreen: React.FC = () => {
                 className="p-2 rounded-xl border flex items-center justify-between gap-1.5 transition-colors cursor-pointer hover:border-blue-300 dark:hover:border-blue-700 bg-slate-50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-800 select-none"
               >
                 <div className="flex items-center gap-2 min-w-0 flex-1 pe-1">
-                  <CategoryIcon name={cat.icon} color={cat.color} size={15} />
+                  <CategoryIcon 
+                    name={cat.icon} 
+                    color={cat.color || '#2563EB'} 
+                    size={14} 
+                    showBackground={true} 
+                    className="w-7 h-7 p-1 rounded-full shrink-0" 
+                  />
                   <span className="text-xs font-medium text-slate-800 dark:text-slate-200 truncate leading-normal" title={getCategoryDisplayName(cat.name, language)}>
                     {getCategoryDisplayName(cat.name, language)}
                   </span>
@@ -1293,6 +1305,7 @@ export const SettingsScreen: React.FC = () => {
               </div>
 
               <StyledIconSelector
+                targetType="category"
                 selectedIcon={newCatIcon}
                 selectedColor={newCatColor}
                 onSelect={(icon, color) => {

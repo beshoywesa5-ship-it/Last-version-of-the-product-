@@ -879,16 +879,17 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
           ) : (
             <div className="flex items-center gap-2">
               {/* Account Label (Right side in RTL) */}
-              <div className="flex items-center gap-1 shrink-0 text-xs font-bold text-slate-700 dark:text-slate-300 w-16">
+              <div className="flex items-center gap-1.5 shrink-0 text-xs font-bold text-slate-700 dark:text-slate-300 w-16">
                 <Wallet size={14} className="text-blue-500" />
                 <span>{language === 'ar' ? 'الحساب:' : 'Account:'}</span>
               </div>
 
-              {/* Scrollable Rectangular Cards Strip */}
+              {/* Scrollable Mini Bank Cards Strip */}
               <div className="flex-1 flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
                 {activeAccounts.map((acc) => {
                   const isSelected = accountId === acc.id;
                   const bal = accountBalances.get(acc.id) ?? 0;
+                  const accColor = acc.color || '#3B82F6';
                   return (
                     <button
                       key={acc.id}
@@ -897,53 +898,58 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
                         triggerHaptic('light');
                         setAccountId(acc.id);
                       }}
-                      className={`h-8 px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 flex items-center gap-1.5 transition-all cursor-pointer select-none active:scale-95 border border-solid ${
+                      className={`h-11 px-3 py-1.5 rounded-xl shrink-0 flex items-center gap-2 transition-all cursor-pointer select-none active:scale-95 border ${
                         isSelected
-                          ? 'bg-blue-600 text-white border-blue-600 shadow-xs ring-2 ring-blue-500/25'
-                          : 'bg-slate-50 dark:bg-slate-800/90 text-slate-700 dark:text-slate-300 border-slate-200/90 dark:border-slate-700/80 hover:border-slate-400'
+                          ? 'bg-blue-600 text-white border-blue-500 shadow-md ring-2 ring-blue-500/30'
+                          : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-400'
                       }`}
                     >
                       <AccountIcon
                         name={acc.icon || acc.type}
-                        color={isSelected ? '#FFFFFF' : '#64748B'}
-                        size={13}
-                        showBackground={false}
-                        className="w-3.5 h-3.5 shrink-0"
+                        color={isSelected ? '#FFFFFF' : accColor}
+                        size={15}
+                        showBackground={true}
+                        className="w-6 h-6 p-1 rounded-lg"
                       />
-                      <span className="whitespace-nowrap">{getAccountDisplayName(acc.name, language)}</span>
-                      <span className={`text-[10px] font-medium ${isSelected ? 'text-blue-100' : 'text-slate-400'}`}>
-                        ({formatCurrency(bal, acc.currency, language)})
-                      </span>
+                      <div className="text-start leading-tight">
+                        <span className="text-xs font-bold block truncate max-w-[90px]">
+                          {getAccountDisplayName(acc.name, language)}
+                        </span>
+                        <span className={`text-[10px] font-black tracking-tight ${isSelected ? 'text-blue-100' : 'text-slate-900 dark:text-white'}`}>
+                          {formatCurrency(bal, acc.currency, language)}
+                        </span>
+                      </div>
                     </button>
                   );
                 })}
 
-                {/* Add Account Button (Uniform size and solid border) */}
+                {/* Add Account Button */}
                 <button
                   type="button"
                   onClick={() => setIsAddingAccount(true)}
-                  className="h-8 px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 flex items-center gap-1.5 border border-solid border-slate-200/90 dark:border-slate-700/80 bg-slate-50 dark:bg-slate-800/90 text-slate-700 dark:text-slate-300 hover:border-blue-500 hover:text-blue-600 transition-all cursor-pointer select-none active:scale-95"
+                  className="h-11 px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 flex items-center gap-1.5 border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 hover:border-blue-500 hover:text-blue-600 transition-all cursor-pointer select-none active:scale-95"
                 >
-                  <Plus size={13} className="text-slate-400 shrink-0" />
+                  <Plus size={14} className="text-slate-400 shrink-0" />
                   <span className="whitespace-nowrap">{language === 'ar' ? 'حساب' : 'Account'}</span>
                 </button>
               </div>
             </div>
           )}
 
-          {/* 6. Categories Row (Single Line: Label on the right, rectangular blue-accent cards horizontally beside it) */}
+          {/* 6. Categories Row (Circular Category Pills with colored bubble icons) */}
           {type !== 'transfer' && (
             <div className="flex items-center gap-2">
               {/* Category Label (Right side in RTL) */}
-              <div className="flex items-center gap-1 shrink-0 text-xs font-bold text-slate-700 dark:text-slate-300 w-16">
+              <div className="flex items-center gap-1.5 shrink-0 text-xs font-bold text-slate-700 dark:text-slate-300 w-16">
                 <Tag size={14} className="text-blue-500" />
                 <span>{language === 'ar' ? 'الفئة:' : 'Category:'}</span>
               </div>
 
-              {/* Scrollable Rectangular Cards Strip */}
-              <div className="flex-1 flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+              {/* Scrollable Circular Category Pills / Bubbles */}
+              <div className="flex-1 flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
                 {activeCategories.map((cat) => {
                   const isSelected = categoryId === cat.id;
+                  const catColor = cat.color || '#3B82F6';
                   return (
                     <button
                       key={cat.id}
@@ -952,29 +958,32 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
                         triggerHaptic('light');
                         setCategoryId(cat.id);
                       }}
-                      className={`h-8 px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 flex items-center gap-1.5 transition-all cursor-pointer select-none active:scale-95 border border-solid ${
+                      className={`h-8 px-2.5 py-1 rounded-full text-xs font-bold shrink-0 flex items-center gap-1.5 transition-all cursor-pointer select-none active:scale-95 border ${
                         isSelected
-                          ? 'bg-blue-600 text-white border-blue-600 shadow-xs ring-2 ring-blue-500/25'
-                          : 'bg-slate-50 dark:bg-slate-800/90 text-slate-700 dark:text-slate-300 border-slate-200/90 dark:border-slate-700/80 hover:border-slate-400'
+                          ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-900 dark:border-white shadow-sm ring-2 ring-blue-500/30'
+                          : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-400'
                       }`}
                     >
-                      <CategoryIcon
-                        name={cat.icon}
-                        color={isSelected ? '#FFFFFF' : '#64748B'}
-                        size={13}
-                        showBackground={false}
-                        className="w-3.5 h-3.5 shrink-0"
-                      />
+                      <div 
+                        className="w-4.5 h-4.5 rounded-full flex items-center justify-center text-white shrink-0 shadow-2xs"
+                        style={{ backgroundColor: catColor }}
+                      >
+                        <CategoryIcon
+                          name={cat.icon}
+                          color="#FFFFFF"
+                          size={11}
+                        />
+                      </div>
                       <span className="whitespace-nowrap">{getCategoryDisplayName(cat.name, language)}</span>
                     </button>
                   );
                 })}
 
-                {/* Add Category Button (Uniform size and solid border) */}
+                {/* Add Category Button */}
                 <button
                   type="button"
                   onClick={() => setIsAddingCategory(true)}
-                  className="h-8 px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 flex items-center gap-1.5 border border-solid border-slate-200/90 dark:border-slate-700/80 bg-slate-50 dark:bg-slate-800/90 text-slate-700 dark:text-slate-300 hover:border-blue-500 hover:text-blue-600 transition-all cursor-pointer select-none active:scale-95"
+                  className="h-8 px-2.5 py-1 rounded-full text-xs font-bold shrink-0 flex items-center gap-1 border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 hover:border-blue-500 hover:text-blue-600 transition-all cursor-pointer select-none active:scale-95"
                 >
                   <Plus size={13} className="text-slate-400 shrink-0" />
                   <span className="whitespace-nowrap">{language === 'ar' ? 'فئة' : 'Category'}</span>
